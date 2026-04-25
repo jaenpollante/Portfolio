@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>My Profile | Gallery Showcase</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== ADDITIONAL & OVERRIDE STYLES FOR ORGANIZED GALLERY ===== */
+    /* Fixing the critical gallery-img width issue from original CSS (width: 300px% was broken) */
+    /* Also improving overall gallery organization and responsiveness */
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+      margin: 2rem 0;
+    }
+
+    /* Complete gallery card redesign for better organization */
+    .gallery-item {
+      background: white;
+      border-radius: 1.2rem;
+      overflow: hidden;
+      box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Fixed aspect ratio wrapper - solves uneven image sizes */
+    .img-wrapper {
+      width: 100%;
+      padding-top: 75%; /* 4:3 consistent aspect ratio */
+      position: relative;
+      background: #eef2f7;
+      overflow: hidden;
+    }
+
+    /* Fix for the CSS error: width: 300px% is removed, replaced with proper sizing */
+    .gallery-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      border-radius: 0;
+      transition: transform 0.4s ease;
+      box-shadow: none;
+    }
+
+    .gallery-item:hover .gallery-img {
+      transform: scale(1.05);
+    }
+
+    /* Caption for each image - adds context & organization */
+    .image-caption {
+      padding: 0.8rem 0.8rem 1rem;
+      background: white;
+      text-align: center;
+      font-weight: 500;
+      color: #1e2a3e;
+      font-size: 0.85rem;
+      border-top: 1px solid #f0f2f5;
+    }
+
+    .image-caption span {
+      display: inline-block;
+      background: #eef2ff;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #1f5e96;
+    }
+
+    /* Lightbox overlay for better UX */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 1100;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+    .lightbox-img {
+      max-width: 85%;
+      max-height: 85%;
+      border-radius: 1.2rem;
+      box-shadow: 0 25px 40px rgba(0,0,0,0.4);
+      border: 3px solid rgba(255,255,240,0.2);
+    }
+    .close-lightbox {
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(0,0,0,0.5);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .close-lightbox:hover {
+      background: #c5283e;
+      transform: scale(1.05);
+    }
+
+    /* Additional polish for gallery heading and profile consistency */
+    .gallery-heading {
+      text-align: center;
+      font-size: 2rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1f5e96, #2c3e66);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .gallery-sub {
+      text-align: center;
+      color: #5a6e85;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    /* responsive grid for mobile */
+    @media (max-width: 640px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+      }
+      .image-caption span {
+        font-size: 0.65rem;
+      }
+      .gallery-heading {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* keep original button styles but ensure consistency */
+    .button {
+      background-color: #d48fb3;
+      border: none;
+      color: #fff;
+      padding: 10px 24px;
+      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 40px;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+    .button:hover {
+      background-color: #b45583;
+      transform: scale(1.02);
+    }
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1.5rem;
+    }
+    .details p {
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>My Profile</h1>
+  </header>
+
+  <div class="container">
+    <section class="profile-info">
+      <!-- Using placeholder image since picture/dp.jpg may not exist; but keeps structure -->
+      <img src="picture/dp.jpg" alt="Profile Photo" class="profile-photo" onerror="this.src='https://via.placeholder.com/200x200?text=Photo+Not+Found'; this.onerror=null;">
+      <div class="details">
+        <p><strong>📍 Address:</strong> Brgy. Bantug na Munti, San Juan Licab, Nueva Ecija</p>
+        <p><strong>🎓 Year and Section:</strong> BSIT-SOUTH-2</p>
+        <p><strong>🌟 Motto in Life:</strong> Success is not by chance, it's by choice!</p>
+        <p><strong>📅 Age:</strong> 18</p>
+        <p><strong>⚥ Sex:</strong> Male</p>
+        <p><strong>📧 Email Address:</strong> jaen.pollante.au@phinmaed.com</p>
+        <p><strong>📞 Contact Number:</strong> 09944258953</p>
+      </div>
+    </section>
+
+    <!-- REORGANIZED GALLERY SECTION: NO CATEGORIES - Clean organized grid -->
+    <h2 class="gallery-heading">📸 Photo Gallery</h2>
+    <div class="gallery-sub">organized memories • click any image to enlarge</div>
+
+    <!-- Gallery Grid - Clean grid without category filters -->
+    <div class="gallery" id="galleryGrid">
+      <!-- Gallery items without data-category attributes -->
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/1.jpg" class="gallery-img" alt="Mountain view" loading="lazy" onerror="this.src='https://picsum.photos/id/104/400/300?grayscale'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>MR.L</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/2.jpg" class="gallery-img" alt="City skyline" loading="lazy" onerror="this.src='https://picsum.photos/id/96/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>CHAMPIONSHIP</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/3.jpg" class="gallery-img" alt="Portrait study" loading="lazy" onerror="this.src='https://picsum.photos/id/64/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>HOTDOG</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/4.jpg" class="gallery-img" alt="Forest trail" loading="lazy" onerror="this.src='https://picsum.photos/id/15/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>SILENT NIGHTS</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/5.jpg" class="gallery-img" alt="Neon street" loading="lazy" onerror="this.src='https://picsum.photos/id/91/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>🌲 Whispering Woods</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/6.jpg" class="gallery-img" alt="Creative portrait" loading="lazy" onerror="this.src='https://picsum.photos/id/169/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>SUNSET</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/7.jpg" class="gallery-img" alt="Abstract art" loading="lazy" onerror="this.src='https://picsum.photos/id/20/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>WEDDING</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/8.jpg" class="gallery-img" alt="Coastal view" loading="lazy" onerror="this.src='https://picsum.photos/id/29/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>COMPUTER</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/9.jpg" class="gallery-img" alt="Street photography" loading="lazy" onerror="this.src='https://picsum.photos/id/106/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>DOL</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/10.jpg" class="gallery-img" alt="Artistic blur" loading="lazy" onerror="this.src='https://picsum.photos/id/119/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>CHRISTMAS NIGHT</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/11.jpg" class="gallery-img" alt="Lifestyle portrait" loading="lazy" onerror="this.src='https://picsum.photos/id/26/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>SAD BEYOND SMILE</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/12.jpg" class="gallery-img" alt="Misty hills" loading="lazy" onerror="this.src='https://picsum.photos/id/95/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>TONGUE</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-wrapper">
+          <img src="picture/13.jpg" class="gallery-img" alt="Architecture detail" loading="lazy" onerror="this.src='https://picsum.photos/id/108/400/300'; this.onerror=null;">
+        </div>
+        <div class="image-caption"><span>SWEET</span></div>
+      </div>
+    </div>
+    
+    <p style="text-align: center; font-size: 0.8rem; color: #5a6e85; margin-top: 0.2rem;">✨ Organized gallery: click any image to expand</p>
+  </div>
+
+  <footer class="footer">
+    <a href="homepage.html" class="button">🏠 Go to Homepage</a>
+  </footer>
+
+  <!-- Lightbox component for image enlargement -->
+  <div id="lightbox" class="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img class="lightbox-img" id="lightboxImg" alt="Expanded view">
+  </div>
+
+  <script>
+    (function() {
+      // ---------- GALLERY LOGIC (NO CATEGORIES) ----------
+      // 1. Fix all gallery images to avoid original CSS bug (width: 300px%)
+      const allImages = document.querySelectorAll('.gallery-img');
+      allImages.forEach(img => {
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '0';
+      });
+
+      // 2. LIGHTBOX SYSTEM
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImgElem = document.getElementById('lightboxImg');
+      const closeBtn = document.querySelector('.close-lightbox');
+      
+      function openLightbox(imageSrc) {
+        if (lightboxImgElem) {
+          lightboxImgElem.src = imageSrc;
+          lightbox.style.display = 'flex';
+        }
+      }
+      
+      function closeLightbox() {
+        lightbox.style.display = 'none';
+        if (lightboxImgElem) lightboxImgElem.src = '';
+      }
+      
+      if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+      if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+          if (e.target === lightbox) closeLightbox();
+        });
+      }
+      
+      // Attach click to each gallery item (full card triggers lightbox)
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      galleryItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          const imgInside = item.querySelector('.gallery-img');
+          if (imgInside && imgInside.src) {
+            openLightbox(imgInside.src);
+          }
+        });
+      });
+      
+      // 3. Add nice fade animation keyframes dynamically
+      const styleSheet = document.createElement('style');
+      styleSheet.textContent = `
+        @keyframes fadeScale {
+          0% { opacity: 0; transform: scale(0.96); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .gallery-item {
+          animation: fadeScale 0.35s ease backwards;
+        }
+        /* Additional fix for any weird legacy width */
+        .gallery-img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+        }
+      `;
+      document.head.appendChild(styleSheet);
+      
+      // 4. Fallback for missing images
+      const allActualImgs = document.querySelectorAll('.gallery-img');
+      allActualImgs.forEach(img => {
+        img.addEventListener('error', function() {
+          if (!this.dataset.fallbackAttempted) {
+            this.dataset.fallbackAttempted = true;
+            // Use random beautiful placeholder images
+            const placeholders = [
+              'https://picsum.photos/id/104/500/400',
+              'https://picsum.photos/id/96/500/400', 
+              'https://picsum.photos/id/64/500/400',
+              'https://picsum.photos/id/15/500/400',
+              'https://picsum.photos/id/91/500/400',
+              'https://picsum.photos/id/169/500/400',
+              'https://picsum.photos/id/29/500/400',
+              'https://picsum.photos/id/106/500/400'
+            ];
+            const randomIndex = Math.floor(Math.random() * placeholders.length);
+            this.src = placeholders[randomIndex];
+          }
+        });
+      });
+      
+      // 5. Ensure profile photo fallback if dp.jpg missing
+      const profileImg = document.querySelector('.profile-photo');
+      if (profileImg) {
+        profileImg.addEventListener('error', function() {
+          this.src = 'https://via.placeholder.com/200x200?text=Profile+Photo';
+        });
+      }
+      
+      console.log('✅ Gallery reorganized: clean grid, uniform aspect ratio, lightbox integrated (no categories)');
+    })();
+  </script>
+</body>
+</html>

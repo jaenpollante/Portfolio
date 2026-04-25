@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>QR Code Generator | Smart QR</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #00b4db, #0083b0);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .header h2 {
+      font-size: 2.5rem;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.9);
+      margin-top: 0.5rem;
+    }
+
+    /* Main Container */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .qr-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 2rem;
+      padding: 2.5rem;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+      max-width: 550px;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .qr-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Input Group */
+    .input-group {
+      margin-bottom: 1.8rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      color: #2c5364;
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .qr-input {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      font-size: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .qr-input:focus {
+      outline: none;
+      border-color: #00b4db;
+      box-shadow: 0 0 0 3px rgba(0,180,219,0.2);
+    }
+
+    /* Button Styles */
+    .generate-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    /* QR Code Display */
+    .qr-display {
+      background: #f8f9fa;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      min-height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px dashed #ddd;
+    }
+
+    #qr-code-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    /* Download Button */
+    .download-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-btn:hover {
+      background: #218838;
+      transform: scale(1.02);
+    }
+
+    .download-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Home Button */
+    .home-btn {
+      display: inline-block;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      margin-top: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    /* Examples */
+    .examples {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .example-chip {
+      background: #e9ecef;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .example-chip:hover {
+      background: #00b4db;
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .qr-card { padding: 1.5rem; }
+      .header h2 { font-size: 1.8rem; }
+      .generate-btn { padding: 0.8rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🔲 QR Code Generator</h2>
+    <p>Convert text, URLs, or any data into a scannable QR code</p>
+  </div>
+
+  <div class="container">
+    <div class="qr-card">
+      <div class="input-group">
+        <label>📝 Enter Text or URL:</label>
+        <input type="text" id="qr-code-value" class="qr-input" placeholder="https://example.com or any text..." autocomplete="off">
+      </div>
+
+      <button class="generate-btn" onclick="generateQRCode()">
+        ✨ Generate QR Code ✨
+      </button>
+
+      <div class="qr-display">
+        <img id="qr-code-image" alt="Your QR code will appear here">
+      </div>
+
+      <button id="downloadBtn" class="download-btn" disabled onclick="downloadQRCode()">
+        💾 Download QR Code (PNG)
+      </button>
+
+      <div class="examples">
+        <span class="example-chip" onclick="setExample('https://jakes-portfolio.netlify.app')">🔗 My Portfolio</span>
+        <span class="example-chip" onclick="setExample('https://wa.me/09944258953')">📱 WhatsApp Me</span>
+        <span class="example-chip" onclick="setExample('Hello! This is Jake\'s digital card 📇')">✨ Business Card</span>
+        <span class="example-chip" onclick="setExample('WIFI:S:MyWifi;T:WPA;P:password123;;')">📶 WiFi Config</span>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <a href="homepage.html" class="home-btn">🏠 Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentQRDataURL = null;
+
+    function generateQRCode() {
+      const value = document.getElementById('qr-code-value').value.trim();
+      
+      if (!value) {
+        alert('⚠️ Please enter text or a URL to generate QR code!');
+        return;
+      }
+
+      try {
+        const options = {
+          value: value,
+          size: 400,
+          level: 'H',  // High error correction
+          foreground: '#000000',
+          background: '#ffffff'
+        };
+        
+        const qrCode = new QRious(options);
+        currentQRDataURL = qrCode.toDataURL();
+        
+        const qrImage = document.getElementById('qr-code-image');
+        qrImage.src = currentQRDataURL;
+        qrImage.alt = `QR Code for: ${value}`;
+        
+        // Enable download button
+        const downloadBtn = document.getElementById('downloadBtn');
+        downloadBtn.disabled = false;
+        
+        // Add success animation
+        qrImage.style.animation = 'none';
+        qrImage.offsetHeight;
+        qrImage.style.animation = 'fadeScale 0.4s ease';
+        
+        console.log('✅ QR Code generated successfully!');
+      } catch (error) {
+        console.error('QR Generation Error:', error);
+        alert('❌ Failed to generate QR code. Please check your input.');
+      }
+    }
+
+    function downloadQRCode() {
+      if (!currentQRDataURL) {
+        alert('Please generate a QR code first!');
+        return;
+      }
+      
+      const link = document.createElement('a');
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      link.download = `qrcode_${timestamp}.png`;
+      link.href = currentQRDataURL;
+      link.click();
+      
+      // Visual feedback
+      const btn = document.getElementById('downloadBtn');
+      btn.textContent = '✅ Downloaded!';
+      setTimeout(() => {
+        btn.textContent = '💾 Download QR Code (PNG)';
+      }, 1500);
+    }
+
+    function setExample(text) {
+      document.getElementById('qr-code-value').value = text;
+      generateQRCode();
+    }
+
+    // Add animation keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeScale {
+        0% { opacity: 0; transform: scale(0.9); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Auto-generate on Enter key
+    document.getElementById('qr-code-value').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        generateQRCode();
+      }
+    });
+
+    // Optional: Generate demo QR on load
+    setTimeout(() => {
+      if (!document.getElementById('qr-code-value').value) {
+        document.getElementById('qr-code-value').value = 'https://jake-portfolio.demo';
+        generateQRCode();
+      }
+    }, 500);
+  </script>
+</body>
+</html>

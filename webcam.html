@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Webcam Studio | Human Computer Interaction</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Poppins', cursive, sans-serif;
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0f3460, #533483);
+      padding: 1.8rem;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .header h2 {
+      font-size: 2rem;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.8);
+      margin-top: 0.5rem;
+    }
+
+    /* Main Container */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .webcam-panel {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 2rem;
+      padding: 2rem;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    /* Video Container */
+    .video-container {
+      background: #000;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    #webcam {
+      width: 100%;
+      height: auto;
+      display: block;
+      transform: scaleX(1);
+      transition: transform 0.2s;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .cam-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      color: white;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: inherit;
+    }
+
+    .cam-btn-off {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+
+    .cam-btn-on {
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .cam-btn:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .cam-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Status Message */
+    .status-msg {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    #webcamoff {
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      background: rgba(0,0,0,0.7);
+      color: #ffc107;
+      display: inline-block;
+      width: auto;
+    }
+
+    /* Action Buttons (Screenshot & Mirror) */
+    .action-controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .action-btn {
+      background: #2c3e50;
+      border: none;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #34495e;
+      transform: scale(1.02);
+    }
+
+    /* Screenshot Preview */
+    .screenshot-preview {
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+
+    .screenshot-preview img {
+      max-width: 100%;
+      border-radius: 1rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin-top: 0.5rem;
+    }
+
+    /* Home Button */
+    .home-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .home-btn {
+      display: inline-block;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      padding: 0.7rem 2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .home-btn:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .webcam-panel { padding: 1rem; }
+      .cam-btn { padding: 0.6rem 1.2rem; font-size: 0.85rem; }
+      .header h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🎥 Human Computer Interaction Webcam Studio</h2>
+    <p>Control your camera | Take snapshots | Experience HCI</p>
+  </div>
+
+  <div class="container">
+    <div class="webcam-panel">
+      <div class="video-container">
+        <video id="webcam" width="100%" height="auto" autoplay playsinline muted></video>
+      </div>
+
+      <div class="controls">
+        <button class="cam-btn cam-btn-on" onclick="turnOn()">
+          🟢 Turn On Camera
+        </button>
+        <button class="cam-btn cam-btn-off" onclick="turnOff()">
+          🔴 Turn Off Camera
+        </button>
+      </div>
+
+      <div class="action-controls">
+        <button class="action-btn" onclick="takeScreenshot()">
+          📸 Take Screenshot
+        </button>
+        <button class="action-btn" onclick="toggleMirror()">
+          🔄 Mirror Mode
+        </button>
+      </div>
+
+      <div class="status-msg">
+        <h1 id="webcamoff"></h1>
+      </div>
+
+      <div class="screenshot-preview" id="screenshotPreview">
+        <p style="color:white;">📸 Last captured:</p>
+        <img id="screenshotImg" alt="Screenshot preview">
+      </div>
+
+      <div class="home-link">
+        <a href="homepage.html" class="home-btn">🏠 Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let webcamStream = null;
+    let isMirrored = false;
+    const videoElement = document.getElementById('webcam');
+
+    async function initWebcam() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              facingMode: "user"
+            } 
+          });
+          
+          if (webcamStream) {
+            turnOff();
+          }
+          
+          webcamStream = stream;
+          videoElement.srcObject = stream;
+          await videoElement.play();
+          
+          document.getElementById('webcamoff').innerHTML = '';
+          console.log('✅ Webcam initialized successfully');
+          
+          // Reset mirror effect if needed
+          applyMirrorEffect();
+          
+        } catch (error) {
+          console.error('Camera access error:', error);
+          document.getElementById('webcamoff').innerHTML = '❌ Camera access denied or not available';
+          document.getElementById('webcamoff').style.color = '#ff6b6b';
+        }
+      } else {
+        document.getElementById('webcamoff').innerHTML = '❌ Your browser does not support webcam access';
+      }
+    }
+
+    function turnOff() {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => {
+          track.stop();
+        });
+        videoElement.srcObject = null;
+        webcamStream = null;
+        const msg = "🔴 Camera is OFF";
+        document.getElementById('webcamoff').innerHTML = msg;
+        document.getElementById('webcamoff').style.color = '#ffc107';
+        
+        // Hide screenshot preview when cam off? keep but fine
+        console.log('Camera turned off');
+      } else {
+        document.getElementById('webcamoff').innerHTML = '⚠️ No active camera stream';
+      }
+    }
+
+    async function turnOn() {
+      if (!webcamStream) {
+        await initWebcam();
+      } else {
+        document.getElementById('webcamoff').innerHTML = '✅ Camera already active';
+        setTimeout(() => {
+          if (!webcamStream) document.getElementById('webcamoff').innerHTML = '';
+        }, 1500);
+      }
+    }
+
+    function applyMirrorEffect() {
+      if (videoElement) {
+        videoElement.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+      }
+    }
+
+    function toggleMirror() {
+      isMirrored = !isMirrored;
+      applyMirrorEffect();
+      const msg = isMirrored ? '🪞 Mirror mode ON' : '🪞 Mirror mode OFF';
+      const statusDiv = document.getElementById('webcamoff');
+      statusDiv.innerHTML = msg;
+      statusDiv.style.color = '#80e0d0';
+      setTimeout(() => {
+        if (webcamStream && document.getElementById('webcamoff').innerHTML === msg) {
+          document.getElementById('webcamoff').innerHTML = '';
+        }
+      }, 1500);
+    }
+
+    function takeScreenshot() {
+      if (!webcamStream || !videoElement.videoWidth) {
+        alert('📷 Please turn on the camera first!');
+        return;
+      }
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const ctx = canvas.getContext('2d');
+      
+      // Apply mirror transformation if needed for screenshot
+      if (isMirrored) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      
+      const screenshotData = canvas.toDataURL('image/png');
+      const previewImg = document.getElementById('screenshotImg');
+      const previewDiv = document.getElementById('screenshotPreview');
+      
+      previewImg.src = screenshotData;
+      previewDiv.style.display = 'block';
+      
+      // Auto download option (optional)
+      const link = document.createElement('a');
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      link.download = `webcam_shot_${timestamp}.png`;
+      link.href = screenshotData;
+      link.click();
+      
+      // Show success message
+      const statusDiv = document.getElementById('webcamoff');
+      statusDiv.innerHTML = '📸 Screenshot saved!';
+      statusDiv.style.color = '#7cffb2';
+      setTimeout(() => {
+        if (webcamStream && document.getElementById('webcamoff').innerHTML === '📸 Screenshot saved!') {
+          document.getElementById('webcamoff').innerHTML = '';
+        }
+      }, 2000);
+    }
+
+    // Auto start webcam on page load with a slight delay (better UX)
+    window.addEventListener('load', () => {
+      // Ask for camera permission gracefully
+      setTimeout(() => {
+        initWebcam();
+      }, 500);
+    });
+
+    // Clean up on page unload (optional)
+    window.addEventListener('beforeunload', () => {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+      }
+    });
+  </script>
+</body>
+</html>
